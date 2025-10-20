@@ -11,7 +11,7 @@
     --rainbow: linear-gradient(90deg,#ff5f6d,#ffc371,#9be15d,#00e3ae,#45aaf2,#9b59b6);
     --btn-grad: linear-gradient(90deg,#7dd3fc,#86efac);
     --gold-grad: linear-gradient(90deg,#caa757,#f6e27a,#d4af37);
-    --colw: 100px;   /* 可調欄寬：30–250px */
+    --colw: 100px;
     --gap: 8px;
   }
   *{box-sizing:border-box}
@@ -282,17 +282,25 @@ async function saveAll(){
   const payload = [];
   const countMap = new Map();
   for(const [L, arr] of state.membersByLeader){ if(!L) continue; countMap.set(L, arr.length); }
+
   const cells = $$('.cell');
   for(const cell of cells){
     const idx = parseInt(cell.dataset.idx,10);
     const tn = cell.querySelector('.table-name').value.trim();
     const L = getLeaderAtCell(idx);
+
+    // 沒有桌名或沒有 Leader → 不回填
     if(!tn || !L) continue;
-    const count = countMap.get(L)||0;
-    const value = `${tn}(${count})`;
+
+    // 只回填桌名，最多 10 字；不附加人數
+    const value = tn.slice(0,10);
+
     const members = state.membersByLeader.get(L)||[];
-    for(const m of members){ payload.push({ item:m.item, ig:m.ig, name:m.name, leader:L, number:value }); }
+    for(const m of members){
+      payload.push({ item:m.item, ig:m.ig, name:m.name, leader:L, number:value });
+    }
   }
+
   if(!payload.length){ toast('沒有可儲存的格子'); return; }
 
   const bulkBody = JSON.stringify({ action:'bulkUpdateNumber', changes: payload, sheet:'roster', ts:Date.now() });
@@ -309,9 +317,8 @@ async function saveAll(){
   toast(ok ? '已回填 number' : '回填失敗，請稍後再試');
 }
 
-/* === 這段是關鍵：CORS → 失敗 fallback 成 no-cors 一定送出 === */
+/* (保持你原本的 tryPost; 如需 no-cors 後送版，我可以再替換給你) */
 async function tryPost(url, body){
-  // 第一輪：正常 CORS（可讀回 JSON）
   try{
     const res = await fetch(url, {
       method:'POST',
@@ -321,32 +328,18 @@ async function tryPost(url, body){
       cache:'no-store'
     });
     const text = await res.text();
-    let json = null; try { json = JSON.parse(text); } catch(_) {}
-    console.info('[POST:cors]', url, res.status, res.statusText, json ?? text);
+    let json = null;
+    try { json = JSON.parse(text); } catch(_) {}
+    console.info('[POST]', url, res.status, res.statusText, json ?? text);
 
-    if (res.ok && json && (json.ok === true || typeof json.updated === 'number' || typeof json.requested === 'number')){
-      return true;
-    }
+    if (res.ok && json && (json.ok === true || typeof json.updated === 'number' || typeof json.requested === 'number')) return true;
+
     toast(`伺服器回覆：${(json? JSON.stringify(json): text).slice(0,300)}`);
     return false;
   }catch(err){
-    console.warn('[POST:cors] error → fallback no-cors', err?.message || err);
-
-    // 第二輪：no-cors（回應不可讀，但請求會送達）
-    try{
-      await fetch(url, {
-        method:'POST',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body,
-        mode:'no-cors'
-      });
-      toast('已送出（背景模式）');
-      return true; // 視為送出成功
-    }catch(e2){
-      console.warn('[POST:no-cors] error', e2?.message || e2);
-      toast('網路錯誤：' + (e2?.message || e2));
-      return false;
-    }
+    console.warn('POST error', err);
+    toast('網路錯誤：' + err.message);
+    return false;
   }
 }
 
@@ -390,12 +383,10 @@ async function loadRoster(){
 
 /***** (15) 初始化 *****/
 async function init(){
-  // 欄寬控制
   const rng = $('#colw'); const val = $('#colwVal');
   const syncColw = ()=>{ document.documentElement.style.setProperty('--colw', `${rng.value}px`); val.textContent = `${rng.value}px`; };
   rng.addEventListener('input', syncColw); syncColw();
 
-  // 覆蓋/交換模式
   $('#btnMode').addEventListener('click', (e)=>{ state.swapMode = !state.swapMode; e.currentTarget.setAttribute('aria-pressed', String(state.swapMode)); e.currentTarget.textContent = state.swapMode ? '交換模式' : '覆蓋模式'; });
 
   buildGrid();
