@@ -41,10 +41,10 @@
   .placeholder{color:var(--muted);font-size:12px}
 
   /* Leader pill */
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f1117;cursor:grab;user-select:none}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f1117;cursor:grab;user-select:none;max-width:100%} 
   .pill:active{cursor:grabbing}
-  .pill .name{font-weight:800}
-  .pill .dot{margin-left:6px;width:14px;height:14px;border-radius:50%;border:2px solid #2b3244;display:inline-flex;align-items:center;justify-content:center;}
+  .pill .name{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} 
+  .pill .dot{flex:0 0 14px;margin-left:6px;width:14px;height:14px;border-radius:50%;border:2px solid #2b3244;display:inline-flex;align-items:center;justify-content:center;} 
   .pill .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:#2b3244}
 
   /* Grid */
@@ -312,12 +312,29 @@ async function saveAll(){
 }
 async function tryPost(url, body){
   try{
-    const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body, mode:'cors', cache:'no-store' });
-    console.info('[POST]', url, res.status, res.statusText);
-    if(res.type==='opaque') return true; // same as before
-    if(res.ok) return true;
-    try{ const j=await res.json(); return !!(j && (j.ok || Array.isArray(j))); }catch{ return false; }
-  }catch(err){ console.warn('POST error', err); return false; }
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body,
+      mode:'cors',
+      cache:'no-store'
+    });
+    const text = await res.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch(_) {}
+    console.info('[POST]', url, res.status, res.statusText, json ?? text);
+
+    // 嚴謹成功條件：HTTP 200 且回傳 { ok: true }
+    if (res.ok && json && json.ok === true) return true;
+
+    // 顯示伺服器回覆，便於定位 notFound / 欄位缺失 等問題
+    toast(`伺服器回覆：${(json? JSON.stringify(json): text).slice(0,300)}`);
+    return false;
+  }catch(err){
+    console.warn('POST error', err);
+    toast('網路錯誤：' + err.message);
+    return false;
+  }
 }
 
 /***** (14) 讀取 roster（加入 cache buster + 寬鬆解析） *****/
