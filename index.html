@@ -449,7 +449,8 @@ async function saveAll(){
   if(!ok){
     let all = true;
     for(const ch of payload){
-      const body = JSON.stringify({ action:'updateNumber', item: ch.item, ig:ch.ig, name:ch.name, number: ch.number, sheet:'roster', ts:Date.now() });
+      const body = JSON.stringify({ action:'updateNumber', item: ch.item, ig:ch.ig, name:ch.name,
+      leader: ch.leader, number: ch.number, sheet:'roster', ts:Date.now() });
       const one = await tryPost(GAS_WEB_APP_URL, body);
       if(!one) all = false;
     }
@@ -459,12 +460,48 @@ async function saveAll(){
   toast(ok ? '已回填 number' : '回填失敗，請稍後再試');
 }
 
+
 async function tryPost(url, body){
   try{
-    const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body, mode:'cors', cache:'no-store' });
-    if(res.type==='opaque') return true;
-    if(res.ok) return true;
-    try{ const j=await res.json(); return !!(j && (j.ok || Array.isArray(j))); }catch{ return false; }
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body,
+      mode:'cors',
+      cache:'no-store'
+    });
+
+    // 有些環境會回 opaque（跨網域且未暴露標頭），視為成功，但盡量解析
+    if(res.type === 'opaque') return true;
+
+    let data = null;
+    try{
+      data = await res.json();
+    }catch(_){
+      // 非 JSON：以 HTTP 狀態為準
+      return res.ok;
+    }
+
+    // 期待 GAS 回 { ok:true/false, data?, error? }
+    if(data && data.ok) return true;
+
+    // 失敗就把錯誤秀出來，方便你知道是哪個 key 對不到
+    if(data && data.error){
+      console.error('GAS error:', data);
+      toast(`回填失敗：${data.error}`);
+    }else{
+      console.error('GAS unexpected:', data);
+      toast('回填失敗（未知回應）');
+    }
+    return false;
+
+  }catch(err){
+    console.error('POST failed:', err);
+    toast('回填失敗（網路或權限問題）');
+    return false;
+  }
+}
+
   }catch{ return false; }
 }
 </script>
