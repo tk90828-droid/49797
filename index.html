@@ -10,6 +10,7 @@
     --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
     --rainbow: linear-gradient(90deg,#ff5f6d,#ffc371,#9be15d,#00e3ae,#45aaf2,#9b59b6);
     --btn-grad: linear-gradient(90deg,#7dd3fc,#86efac);
+    --gold-grad: linear-gradient(90deg,#caa757,#f6e27a,#d4af37);
     --colw: 100px;   /* 可調欄寬：30–250px */
     --gap: 8px;
   }
@@ -43,13 +44,13 @@
   /* Leader pill */
   .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f1117;cursor:grab;user-select:none;max-width:100%} 
   .pill:active{cursor:grabbing}
-  .pill .name{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} 
+  .pill .name{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}  
   .pill .dot{flex:0 0 14px;margin-left:6px;width:14px;height:14px;border-radius:50%;border:2px solid #2b3244;display:inline-flex;align-items:center;justify-content:center;} 
   .pill .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:#2b3244}
 
   /* Grid */
   .grid-wrap{margin-top:12px}
-  .grid{--w: var(--colw);display:grid;grid-template-columns:repeat(9,var(--w));gap:var(--gap);width:min(100%, calc(var(--colw)*9 + var(--gap)*8));}
+  .grid{--w: var(--colw);display:grid;grid-template-columns:repeat(11,var(--w));gap:var(--gap);width:min(100%, calc(var(--colw)*11 + var(--gap)*10));} 
   .cell{border:1px solid var(--border);border-radius:12px;padding:6px;min-height:calc(var(--colw) - 20px);background:var(--card);position:relative}
   .cell .head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
   .table-name{width:100%;padding:6px 8px;border-radius:8px;border:1px solid #2b3244;background:#0f1117;color:#e5e7eb}
@@ -124,7 +125,7 @@
 
 <script>
 /***** (1) 設定區：請確認以下兩個常數 *****/
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwfNYaXD8TtPOUIg0cASX7xKAONXtX7ni-TBI4E-FQhtOhge3rNUOcU0uesyAZruh-Bkg/exec'; // ← 換成你的 GAS Web App URL
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/XXXXXXXX/exec'; // ← 換成你的 GAS Web App URL
 const ROSTER_URL = 'https://docs.google.com/spreadsheets/d/1DY4TajQDdvikPfM_-A6St5CCW996NtQkclC2IG4PJ4s/gviz/tq?tqx=out:json&sheet=roster';
 
 /***** (2) 快捷 *****/
@@ -134,7 +135,7 @@ const toastBox = $('#toast');
 function toast(msg){ toastBox.textContent = msg; toastBox.classList.add('show'); setTimeout(()=>toastBox.classList.remove('show'), 1800); }
 
 /***** (3) Grid 參數 *****/
-const ROWS = 11, COLS = 9, CELLS = ROWS*COLS;
+const ROWS = 9, COLS = 11, CELLS = ROWS*COLS;
 
 /***** (4) 全域狀態 *****/
 const state = {
@@ -325,7 +326,7 @@ async function tryPost(url, body){
     console.info('[POST]', url, res.status, res.statusText, json ?? text);
 
     // 嚴謹成功條件：HTTP 200 且回傳 { ok: true }
-    if (res.ok && json && json.ok === true) return true;
+    if (res.ok && json && (json.ok === true || typeof json.updated === 'number' || typeof json.requested === 'number')) return true;
 
     // 顯示伺服器回覆，便於定位 notFound / 欄位缺失 等問題
     toast(`伺服器回覆：${(json? JSON.stringify(json): text).slice(0,300)}`);
