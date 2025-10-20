@@ -150,6 +150,19 @@ const state = {
 const needKeys = ['item','number','name','ig','country','flag','leader','link','status'];
 const normKey = s => (s||'').toString().toLowerCase().replace(/\s|　|_/g,'').trim();
 
+/***** (5a) 桌名本地保存（localStorage） *****/
+const STORAGE_KEY = 'tp_table_names_v1';
+function loadTableNames(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch{ return {}; }
+}
+function saveTableNames(map){ localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }
+const tableNames = loadTableNames();
+function getTableName(idx){ return tableNames[idx] || ''; }
+function setTableName(idx, val){
+  if (val) tableNames[idx] = val; else delete tableNames[idx];
+  saveTableNames(tableNames);
+}
+
 /***** (6) 建立 Grid *****/
 function buildGrid(){
   const grid = $('#grid'); grid.innerHTML = '';
@@ -160,7 +173,13 @@ function buildGrid(){
     cell.setAttribute('data-dropzone','cell');
 
     const head = document.createElement('div'); head.className='head';
-    const input = document.createElement('input'); input.className='table-name'; input.placeholder = `桌名 #${i+1}`;
+    const input = document.createElement('input');
+    input.className='table-name';
+    input.placeholder = `桌名 #${i+1}`;
+    input.value = getTableName(i);                 // ← 讀回保存的桌名
+    input.addEventListener('input', () => {        // ← 即時保存
+      setTableName(i, input.value.trim());
+    });
     head.appendChild(input);
 
     const drop = document.createElement('div'); drop.className='drop';
@@ -317,7 +336,7 @@ async function saveAll(){
   toast(ok ? '已回填 number' : '回填失敗，請稍後再試');
 }
 
-/* (保持你原本的 tryPost; 如需 no-cors 後送版，我可以再替換給你) */
+/* 保持原本的 tryPost（可讀 JSON 成功回覆） */
 async function tryPost(url, body){
   try{
     const res = await fetch(url, {
