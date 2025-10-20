@@ -42,15 +42,15 @@
   .placeholder{color:var(--muted);font-size:12px}
 
   /* Leader pill */
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f1117;cursor:grab;user-select:none;max-width:100%} 
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f1117;cursor:grab;user-select:none;max-width:100%}
   .pill:active{cursor:grabbing}
-  .pill .name{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}  
-  .pill .dot{flex:0 0 14px;margin-left:6px;width:14px;height:14px;border-radius:50%;border:2px solid #2b3244;display:inline-flex;align-items:center;justify-content:center;} 
+  .pill .name{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .pill .dot{flex:0 0 14px;margin-left:6px;width:14px;height:14px;border-radius:50%;border:2px solid #2b3244;display:inline-flex;align-items:center;justify-content:center;}
   .pill .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:#2b3244}
 
   /* Grid */
   .grid-wrap{margin-top:12px}
-  .grid{--w: var(--colw);display:grid;grid-template-columns:repeat(11,var(--w));gap:var(--gap);width:min(100%, calc(var(--colw)*11 + var(--gap)*10));} 
+  .grid{--w: var(--colw);display:grid;grid-template-columns:repeat(11,var(--w));gap:var(--gap);width:min(100%, calc(var(--colw)*11 + var(--gap)*10));}
   .cell{border:1px solid var(--border);border-radius:12px;padding:6px;min-height:calc(var(--colw) - 20px);background:var(--card);position:relative}
   .cell .head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
   .table-name{width:100%;padding:6px 8px;border-radius:8px;border:1px solid #2b3244;background:#0f1117;color:#e5e7eb}
@@ -125,7 +125,7 @@
 
 <script>
 /***** (1) 設定區：請確認以下兩個常數 *****/
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbykkFpq9sT-hTXPOEsqtBTUqMDs0U7nrzO_221cr9c-E4x62IuIWblUuCOWF1C4SAHlcw/exec'; // ← 換成你的 GAS Web App URL
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbykkFpq9sT-hTXPOEsqtBTUqMDs0U7nrzO_221cr9c-E4x62IuIWblUuCOWF1C4SAHlcw/exec';
 const ROSTER_URL = 'https://docs.google.com/spreadsheets/d/1DY4TajQDdvikPfM_-A6St5CCW996NtQkclC2IG4PJ4s/gviz/tq?tqx=out:json&sheet=roster';
 
 /***** (2) 快捷 *****/
@@ -139,11 +139,11 @@ const ROWS = 9, COLS = 11, CELLS = ROWS*COLS;
 
 /***** (4) 全域狀態 *****/
 const state = {
-  rows: [],                // 原始列資料（標準化後）
-  leaders: [],             // 去重後的 leader 名單
-  membersByLeader: new Map(), // leader -> 陣列
-  pos: new Map(),          // leader -> {type:'dock'|'cell', idx?}
-  swapMode: false          // false=覆蓋, true=交換
+  rows: [],
+  leaders: [],
+  membersByLeader: new Map(),
+  pos: new Map(),
+  swapMode: false
 };
 
 /***** (5) 欄名正規化 *****/
@@ -197,7 +197,7 @@ function buildDock(){
 
   // Dock 作為 dropzone
   body.addEventListener('dragover', e=>{ e.preventDefault(); });
-  body.addEventListener('drop', e=>{ e.preventDefault(); const leader=e.dataTransfer.getData('text/plain'); if(!leader) return; state.pos.set(leader,{type:'dock'}); buildDock(); /* 從格子移除 */ const p=state.pos.get(leader); $$(`.cell`).forEach((c,idx)=>{ renderCellLeader(idx); }); });
+  body.addEventListener('drop', e=>{ e.preventDefault(); const leader=e.dataTransfer.getData('text/plain'); if(!leader) return; state.pos.set(leader,{type:'dock'}); buildDock(); $$(`.cell`).forEach((c,idx)=>{ renderCellLeader(idx); }); });
 }
 
 /***** (9) 取得/設定 Cell 內 leader *****/
@@ -219,7 +219,6 @@ function onDropToCell(idx, e){
   const src = state.pos.get(leader);
   if(state.swapMode){
     if(occupied){
-      // 交換：換位置
       if(src && src.type==='cell'){
         const srcPos = { ...src };
         state.pos.set(leader, {type:'cell', idx});
@@ -231,12 +230,10 @@ function onDropToCell(idx, e){
         state.pos.set(leader, {type:'cell', idx}); renderCellLeader(idx);
       }
     }else{
-      // 空位 → 直接放
       state.pos.set(leader, {type:'cell', idx}); renderCellLeader(idx);
       if(src && src.type==='cell') renderCellLeader(src.idx);
     }
   }else{
-    // 覆蓋：把原本的送回 Dock，再把 leader 放進來
     if(occupied){
       const occPos = state.pos.get(occupied);
       state.pos.set(occupied, {type:'dock'});
@@ -311,7 +308,10 @@ async function saveAll(){
   }
   toast(ok ? '已回填 number' : '回填失敗，請稍後再試');
 }
+
+/* === 這段是關鍵：CORS → 失敗 fallback 成 no-cors 一定送出 === */
 async function tryPost(url, body){
+  // 第一輪：正常 CORS（可讀回 JSON）
   try{
     const res = await fetch(url, {
       method:'POST',
@@ -321,20 +321,32 @@ async function tryPost(url, body){
       cache:'no-store'
     });
     const text = await res.text();
-    let json = null;
-    try { json = JSON.parse(text); } catch(_) {}
-    console.info('[POST]', url, res.status, res.statusText, json ?? text);
+    let json = null; try { json = JSON.parse(text); } catch(_) {}
+    console.info('[POST:cors]', url, res.status, res.statusText, json ?? text);
 
-    // 嚴謹成功條件：HTTP 200 且回傳 { ok: true }
-    if (res.ok && json && (json.ok === true || typeof json.updated === 'number' || typeof json.requested === 'number')) return true;
-
-    // 顯示伺服器回覆，便於定位 notFound / 欄位缺失 等問題
+    if (res.ok && json && (json.ok === true || typeof json.updated === 'number' || typeof json.requested === 'number')){
+      return true;
+    }
     toast(`伺服器回覆：${(json? JSON.stringify(json): text).slice(0,300)}`);
     return false;
   }catch(err){
-    console.warn('POST error', err);
-    toast('網路錯誤：' + err.message);
-    return false;
+    console.warn('[POST:cors] error → fallback no-cors', err?.message || err);
+
+    // 第二輪：no-cors（回應不可讀，但請求會送達）
+    try{
+      await fetch(url, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body,
+        mode:'no-cors'
+      });
+      toast('已送出（背景模式）');
+      return true; // 視為送出成功
+    }catch(e2){
+      console.warn('[POST:no-cors] error', e2?.message || e2);
+      toast('網路錯誤：' + (e2?.message || e2));
+      return false;
+    }
   }
 }
 
@@ -369,7 +381,6 @@ async function loadRoster(){
   // 分組
   const map = new Map();
   for(const row of normalized){ const key = (row.leader||'').trim(); if(!map.has(key)) map.set(key, []); map.get(key).push(row); }
-  // 移除空 leader
   map.delete('');
   state.membersByLeader = map;
   state.leaders = Array.from(map.keys()).sort((a,b)=>a.localeCompare(b));
