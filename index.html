@@ -3,54 +3,62 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Taiwan Pride 🌈｜11×9 排桌表（Leader Dock + Popover）</title>
+<title>Taiwan Pride 🌈｜11×9 排桌表（Leader Dock + Popover）— fixed</title>
 <style>
   :root{
     --bg:#0A0B0F; --card:#10131A; --muted:#9AA4AF; --fg:#F2F5F8; --border:#1f2430;
     --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
     --rainbow: linear-gradient(90deg,#ff5f6d,#ffc371,#9be15d,#00e3ae,#45aaf2,#9b59b6);
     --btn-grad: linear-gradient(90deg,#7dd3fc,#86efac);
-    --colw: 100px;   /* 可調欄寬：30–250px */
+    --gold-grad: linear-gradient(90deg,#caa757,#f6e27a,#d4af37);
+    --colw: 100px;
+    --gap: 8px;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",ui-sans-serif,system-ui;
-    background: radial-gradient(800px 600px at 10% -10%, rgba(255,255,255,.06), transparent), var(--bg);
-    color:var(--fg);
+    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Noto Sans TC", "Segoe UI", Roboto, Helvetica, Arial;
+    background:var(--bg); color:var(--fg);
   }
-  .wrap{max-width:1200px;margin:24px auto 80px;padding:0 14px}
-  .h{font-size:22px;font-weight:900;letter-spacing:.2px}
-  .sub{font-size:13px;color:var(--muted)}
-  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:10px 0 14px}
-  .btn{padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:#0f1117;color:#e5e7eb;font-weight:800;cursor:pointer}
-  .btn.primary{border:0;background:var(--btn-grad);color:#0b0c10}
-  .btn.ghost{background:transparent}
-  .btn.toggle[aria-pressed="true"]{outline:2px solid #93c5fd}
+  .wrap{max-width:1200px;margin:20px auto;padding:0 16px}
+  .h{font-weight:900;font-size:20px}
+  .sub{color:var(--muted);font-size:13px}
+  .rb{height:2px;background:var(--rainbow);opacity:.6;border-radius:2px;margin:6px 0 10px}
 
-  /* ===== Leader Dock（上方） ===== */
-  .dock{position:sticky;top:0;z-index:10;padding:10px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:0 6px 24px rgba(0,0,0,.35)}
-  .dock-title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-  .dock-body{display:flex;flex-wrap:wrap;gap:8px;min-height:46px;border:1px dashed #2b3244;padding:8px;border-radius:10px}
-  .dock-body.drop-hover{outline:2px dashed #93c5fd;outline-offset:2px}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0}
+  .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .ctrls label{font-size:12px;color:var(--muted)}
+  .ctrls input[type="range"]{width:180px}
+  .hint{font-size:12px;color:var(--muted)}
 
-  /* Pill（Leader 按鈕） */
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid #2b3244;background:#0f1117;box-shadow:0 6px 16px rgba(0,0,0,.35);cursor:grab;user-select:none}
-  .pill .name{font-weight:900;font-size:13px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pill .dot{width:8px;height:8px;border-radius:50%;background:#a1a1aa;display:inline-block}
-  .pill .dot-btn{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;border:1px solid #2b3244;background:#141824;cursor:pointer}
-  .pill .dot-btn:hover{box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+  .btn{appearance:none;border:1px solid var(--border);background:#0f1117;color:#e5e7eb;padding:6px 10px;border-radius:999px;cursor:pointer}
+  .btn.primary{background:var(--btn-grad);border:none;color:#0b1220;font-weight:800}
+  .btn.toggle[aria-pressed="true"]{outline:2px solid #3b82f6}
 
-  /* ===== 11×9 Grid ===== */
-  .grid-wrap{margin-top:14px}
-  .grid{display:grid;grid-template-columns:repeat(9,var(--colw));gap:10px;align-items:start}
-  .cell{border:1px solid var(--border);border-radius:12px;background:#10131A;padding:8px;display:flex;flex-direction:column;gap:8px}
-  .table-name{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#0f1117;color:#e5e7eb;font-size:13px}
-  .drop{min-height:40px;border:2px dashed #2b3244;border-radius:10px;display:grid;place-items:center;padding:6px}
-  .drop.drop-hover{outline:2px dashed #93c5fd;outline-offset:2px}
-  .cell .placeholder{font-size:12px;color:#6b7280}
+  /* Dock */
+  .dock{margin-top:8px;border:1px solid var(--border);border-radius:14px;padding:10px;background:var(--card)}
+  .dock-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .dock-body{display:flex;flex-wrap:wrap;gap:8px;min-height:44px;padding:6px;border:1px dashed #2b3244;border-radius:10px}
+  .placeholder{color:var(--muted);font-size:12px}
 
-  /* ===== Popover ===== */
+  /* Leader pill */
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#0f1117;cursor:grab;user-select:none;max-width:100%}
+  .pill:active{cursor:grabbing}
+  .pill .name{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .pill .dot{flex:0 0 14px;margin-left:6px;width:14px;height:14px;border-radius:50%;border:2px solid #2b3244;display:inline-flex;align-items:center;justify-content:center;}
+  .pill .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:#2b3244}
+
+  /* Grid */
+  .grid-wrap{margin-top:12px}
+  .grid{--w: var(--colw);display:grid;grid-template-columns:repeat(11,var(--w));gap:var(--gap);width:min(100%, calc(var(--colw)*11 + var(--gap)*10));}
+  .cell{border:1px solid var(--border);border-radius:12px;padding:6px;min-height:calc(var(--colw) - 20px);background:var(--card);position:relative}
+  .cell .head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+  .table-name{width:100%;padding:6px 8px;border-radius:8px;border:1px solid #2b3244;background:#0f1117;color:#e5e7eb}
+  .drop{min-height:30px;display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+  .cell[data-dropzone="cell"]{outline-offset:-2px}
+  .cell.dragover{outline:2px dashed #3b82f6}
+
+  /* Popover */
   .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
   .popover{width:min(560px,92vw);max-height:70vh;overflow:auto;background:#0f1117;border:1px solid #2b3244;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);padding:12px}
   .po-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -62,13 +70,6 @@
 
   .toast{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:#0f1117;border:1px solid #2b3244;color:#e5e7eb;padding:8px 12px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.45);opacity:0;transition:opacity .25s;z-index:60}
   .toast.show{opacity:1}
-
-  .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .ctrls label{font-size:12px;color:var(--muted)}
-  .ctrls input[type="range"]{width:180px}
-  .hint{font-size:12px;color:var(--muted)}
-
-  .rb{height:2px;background:var(--rainbow);opacity:.6;border-radius:2px;margin:6px 0 10px}
 </style>
 </head>
 <body>
@@ -123,258 +124,146 @@
   <div id="toast" class="toast"></div>
 
 <script>
-/* =====================
-   (1) 設定區
-   ===================== */
-// 1) 雲端名單（與 GAS 無關）：需回傳 Array<Row>
-//    Row 欄位：{ item, number, name, ig, country, flag, leader, link, status }
-const ROSTER_URL = 'https://docs.google.com/spreadsheets/d/1DY4TajQDdvikPfM_-A6St5CCW996NtQkclC2IG4PJ4s/gviz/tq?tqx=out:json&sheet=roster'; // Google Sheets gviz 端點（公開檢視）
+/***** (1) 設定區：請確認以下兩個常數 *****/
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbykkFpq9sT-hTXPOEsqtBTUqMDs0U7nrzO_221cr9c-E4x62IuIWblUuCOWF1C4SAHlcw/exec';
+const ROSTER_URL = 'https://docs.google.com/spreadsheets/d/1DY4TajQDdvikPfM_-A6St5CCW996NtQkclC2IG4PJ4s/gviz/tq?tqx=out:json&sheet=roster';
 
-// 2) 僅在儲存時呼叫 GAS：優先 bulkUpdateNumber（一次回填），fallback updateNumber（逐筆）
-const GAS_WEB_APP_URL ='https://script.google.com/macros/s/AKfycbwJu-HMiNqffufKISLqIXtBw_I2UvojgfpkRU9djzzefIoWRnw-K68u4y4xokyq17hxSw/exec'; // TODO: 換成你的 GAS Web App URL
+/***** (2) 快捷 *****/
+const $  = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const toastBox = $('#toast');
+function toast(msg){ toastBox.textContent = msg; toastBox.classList.add('show'); setTimeout(()=>toastBox.classList.remove('show'), 1800); }
 
-// 3) 固定 11×9
-const ROWS = 11, COLS = 9, CELLS = ROWS * COLS;
+/***** (3) Grid 參數 *****/
+const ROWS = 9, COLS = 11, CELLS = ROWS*COLS;
 
-/* =====================
-   (2) 狀態
-   ===================== */
+/***** (4) 全域狀態 *****/
 const state = {
-  rows: [],                 // roster（所有人）
-  leaders: [],              // leader 名稱列表（唯一）
-  membersByLeader: new Map(), // Map<leader, Row[]>
-  // 位置：leader -> { type:'dock' } 或 { type:'cell', idx:number }
+  rows: [],
+  leaders: [],
+  membersByLeader: new Map(),
   pos: new Map(),
-  swapMode: false,          // false=覆蓋; true=交換
+  swapMode: false
 };
 
-/* =====================
-   (3) DOM 快捷
-   ===================== */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-const toast = msg => { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500) };
-const setColw = px => { document.documentElement.style.setProperty('--colw', px+'px'); $('#colwVal').textContent = px+'px'; };
+/***** (5) 欄名正規化 *****/
+const needKeys = ['item','number','name','ig','country','flag','leader','link','status'];
+const normKey = s => (s||'').toString().toLowerCase().replace(/\s|　|_/g,'').trim();
 
-/* =====================
-   (4) 初始化
-   ===================== */
-(async function init(){
-  // 欄寬控制
-  $('#colw').addEventListener('input', e=> setColw(e.target.value));
-  setColw($('#colw').value);
-
-  // 模式切換（覆蓋 / 交換）
-  $('#btnMode').addEventListener('click', ()=>{
-    state.swapMode = !state.swapMode;
-    const b = $('#btnMode');
-    b.setAttribute('aria-pressed', state.swapMode?'true':'false');
-    b.textContent = state.swapMode ? '交換模式' : '覆蓋模式';
-  });
-
-  // Popover 關閉
-  $('#poBack').addEventListener('click', e=>{ if(e.target.id==='poBack') closePopover() });
-  $('#poClose').addEventListener('click', closePopover);
-
-  buildGrid();
-  await loadRoster();
-  buildDock();
-})();
-
-/* =====================
-   (5) 讀取雲端 roster（非 GAS）
-   ===================== */
-async function loadRoster(){
-  try{
-    const res = await fetch(ROSTER_URL, { cache: 'no-store' });
-    if(!res.ok) throw new Error('Roster fetch failed');
-    let text = await res.text();
-
-    let rowsArr;
-    // 1) 嘗試純 JSON（陣列或 {rows:[]}）
-    try {
-      const j = JSON.parse(text);
-      rowsArr = Array.isArray(j) ? j : (Array.isArray(j.rows) ? j.rows : null);
-    } catch(_) {}
-
-    // 2) 若不是純 JSON → 解析 gviz JSON
-    if(!Array.isArray(rowsArr)){
-      const m = text.match(/setResponse\((.*)\);?$/s);
-      if(!m) throw new Error('Invalid gviz payload');
-      const g = JSON.parse(m[1]);
-      const cols = g.table.cols.map(c => (c.label || c.id || '').toString().trim().toLowerCase());
-      rowsArr = g.table.rows.map(r => {
-        const obj = {};
-        (r.c||[]).forEach((cell, i) => {
-          obj[cols[i] || ('col'+i)] = (cell && (cell.v ?? cell.f)) ?? '';
-        });
-        return obj;
-      });
-    }
-
-    // === 欄位標準化 ===
-    const needKeys = ['item','number','name','ig','country','flag','leader','link','status'];
-    const normalized = rowsArr.map(r => {
-      const o = {};
-      for(const k of needKeys){
-        const hit = Object.keys(r).find(x => x && x.trim().toLowerCase() === k);
-        o[k] = (hit ? r[hit] : '') ?? '';
-      }
-      o.leader = (o.leader||'').toString().trim();
-      o.name   = (o.name  ||'').toString().trim();
-      o.ig     = (o.ig    ||'').toString().trim();
-      return o;
-    });
-
-    // 依 leader 分組
-    const groups = new Map();
-    for(const r of normalized){
-      const key = (r.leader || '').trim();
-      if(!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(r);
-    }
-    state.membersByLeader = groups;
-
-    // 唯一 leaders（排除空字串） → 初始皆在 Dock
-    state.leaders = Array.from(groups.keys()).filter(x=>x).sort((a,b)=>a.localeCompare(b));
-    state.pos.clear();
-    for(const L of state.leaders){ state.pos.set(L, {type:'dock'}); }
-    $('#dockCount').textContent = `${state.leaders.length} 位`;
-  }catch(err){
-    console.error(err);
-    toast('名單載入失敗（請確認表單已開放檢視與分頁名 sheet=roster）');
-  }
+/***** (5a) 桌名本地保存（localStorage） *****/
+const STORAGE_KEY = 'tp_table_names_v1';
+function loadTableNames(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch{ return {}; }
+}
+function saveTableNames(map){ localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }
+const tableNames = loadTableNames();
+function getTableName(idx){ return tableNames[idx] || ''; }
+function setTableName(idx, val){
+  if (val) tableNames[idx] = val; else delete tableNames[idx];
+  saveTableNames(tableNames);
 }
 
-/* =====================
-   (6) Dock & Grid 建立 / 更新
-   ===================== */
-function buildDock(){
-  const box = $('#dockBody');
-  box.innerHTML = '';
-  box.addEventListener('dragover', e=>{e.preventDefault(); box.classList.add('drop-hover')});
-  box.addEventListener('dragleave', ()=> box.classList.remove('drop-hover'));
-  box.addEventListener('drop', e=>{
-    e.preventDefault(); box.classList.remove('drop-hover');
-    const L = e.dataTransfer.getData('text/leader');
-    if(!L) return;
-    moveLeaderToDock(L);
-  });
-
-  // 目前在 dock 的 leaders
-  const inDock = state.leaders.filter(L => (state.pos.get(L)||{}).type==='dock');
-  if(!inDock.length){
-    const p = document.createElement('div'); p.className='placeholder'; p.textContent='Dock 目前沒有 Leader'; box.appendChild(p);
-  } else {
-    for(const L of inDock){ box.appendChild(pill(L)); }
-  }
-}
-
+/***** (6) 建立 Grid *****/
 function buildGrid(){
-  const g = $('#grid'); g.innerHTML='';
+  const grid = $('#grid'); grid.innerHTML = '';
   for(let i=0;i<CELLS;i++){
-    const cell = document.createElement('div'); cell.className='cell'; cell.dataset.idx=i;
-    const input = document.createElement('input'); input.type='text'; input.className='table-name'; input.placeholder='桌名（與欄寬同步）';
-    const drop = document.createElement('div'); drop.className='drop'; drop.dataset.dropzone='cell'; drop.innerHTML='<span class="placeholder">Leader 放置區</span>';
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.dataset.idx = i;
+    cell.setAttribute('data-dropzone','cell');
 
-    // DnD events
-    drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('drop-hover') });
-    drop.addEventListener('dragleave', ()=> drop.classList.remove('drop-hover'));
-    drop.addEventListener('drop', e=>{
-      e.preventDefault(); drop.classList.remove('drop-hover');
-      const L = e.dataTransfer.getData('text/leader'); if(!L) return;
-      placeLeaderIntoCell(L, i);
+    const head = document.createElement('div'); head.className='head';
+    const input = document.createElement('input');
+    input.className='table-name';
+    input.placeholder = `桌名 #${i+1}`;
+    input.value = getTableName(i);                 // ← 讀回保存的桌名
+    input.addEventListener('input', () => {        // ← 即時保存
+      setTableName(i, input.value.trim());
     });
+    head.appendChild(input);
 
-    cell.append(input, drop);
-    g.appendChild(cell);
+    const drop = document.createElement('div'); drop.className='drop';
+    cell.append(head, drop);
+
+    // DnD 事件
+    cell.addEventListener('dragover', (e)=>{ e.preventDefault(); cell.classList.add('dragover'); });
+    cell.addEventListener('dragleave', ()=> cell.classList.remove('dragover'));
+    cell.addEventListener('drop', (e)=>{ e.preventDefault(); cell.classList.remove('dragover'); onDropToCell(i, e); });
+
+    grid.appendChild(cell);
   }
 }
 
-function pill(leader){
-  const el = document.createElement('div'); el.className='pill'; el.draggable=true; el.dataset.leader=leader;
-  el.addEventListener('dragstart', e=>{
-    e.dataTransfer.setData('text/leader', leader);
-    e.dataTransfer.effectAllowed = 'move';
-  });
-  const nm = document.createElement('span'); nm.className='name'; nm.textContent=leader;
-  const dotBtn = document.createElement('button'); dotBtn.className='dot-btn'; dotBtn.title='查看成員（Popover）';
-  const dot = document.createElement('span'); dot.className='dot'; dotBtn.appendChild(dot);
-  dotBtn.addEventListener('click', ()=> openPopover(leader));
-  el.append(nm, dotBtn);
-  return el;
+/***** (7) 產生 Pill *****/
+function makePill(leader){
+  const pill = document.createElement('button'); pill.type='button'; pill.className='pill'; pill.draggable=true;
+  const nm = document.createElement('span'); nm.className='name'; nm.textContent = leader;
+  const dot = document.createElement('span'); dot.className='dot'; dot.title='查看成員';
+  pill.append(nm, dot);
+  pill.addEventListener('click', (e)=>{ if(e.target===dot) openPopover(leader); });
+  dot.addEventListener('click', (e)=>{ e.stopPropagation(); openPopover(leader); });
+  pill.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', leader); e.dataTransfer.effectAllowed='move'; });
+  return pill;
 }
 
-function renderCellLeader(idx){
-  const cell = document.querySelector(`.cell[data-idx="${idx}"]`);
-  if(!cell) return;
-  const drop = cell.querySelector('.drop');
-  drop.innerHTML='';
-  const leader = getLeaderAtCell(idx);
-  if(!leader){ drop.innerHTML='<span class="placeholder">Leader 放置區</span>'; return; }
-  const p = pill(leader);
-  drop.appendChild(p);
+/***** (8) Dock 渲染 *****/
+function buildDock(){
+  const body = $('#dockBody'); body.innerHTML='';
+  const list = state.leaders.filter(L => (state.pos.get(L)?.type!=='cell'));
+  if(!list.length){ const ph=document.createElement('div'); ph.className='placeholder'; ph.textContent='（目前無可用 Leader）'; body.appendChild(ph); }
+  for(const L of list){ body.appendChild(makePill(L)); }
+  $('#dockCount').textContent = `${state.leaders.length} 位`;
+
+  // Dock 作為 dropzone
+  body.addEventListener('dragover', e=>{ e.preventDefault(); });
+  body.addEventListener('drop', e=>{ e.preventDefault(); const leader=e.dataTransfer.getData('text/plain'); if(!leader) return; state.pos.set(leader,{type:'dock'}); buildDock(); $$(`.cell`).forEach((c,idx)=>{ renderCellLeader(idx); }); });
 }
 
+/***** (9) 取得/設定 Cell 內 leader *****/
 function getLeaderAtCell(idx){
-  for(const [L,pos] of state.pos){ if(pos.type==='cell' && pos.idx===idx) return L; }
-  return null;
+  for(const [L, pos] of state.pos){ if(pos.type==='cell' && pos.idx===idx) return L; }
+  return '';
+}
+function renderCellLeader(idx){
+  const cell = $(`.cell[data-idx="${idx}"]`); if(!cell) return;
+  const drop = cell.querySelector('.drop'); drop.innerHTML='';
+  const L = getLeaderAtCell(idx);
+  if(L){ drop.appendChild(makePill(L)); }
 }
 
-/* =====================
-   (7) DnD 行為：唯一性、覆蓋 / 交換
-   ===================== */
-function moveLeaderToDock(leader){
-  const pos = state.pos.get(leader); if(!pos) return;
-  // 如果在某個 cell，清空該處
-  if(pos.type==='cell'){ renderCellLeader(pos.idx); }
-  state.pos.set(leader, {type:'dock'});
-  buildDock();
-}
-
-function placeLeaderIntoCell(leader, idx){
-  const src = state.pos.get(leader);
+/***** (10) Drop 到 Cell 的邏輯（覆蓋/交換） *****/
+function onDropToCell(idx, e){
+  const leader = e.dataTransfer.getData('text/plain'); if(!leader) return;
   const occupied = getLeaderAtCell(idx);
-
-  if(!occupied){
-    // 無人佔用 → 直接放入
-    if(src && src.type==='cell') renderCellLeader(src.idx); // 清掉舊位
-    state.pos.set(leader, {type:'cell', idx});
-    renderCellLeader(idx); buildDock();
-    return;
-  }
-
-  if(occupied === leader){ return; } // 同一人放同格
-
+  const src = state.pos.get(leader);
   if(state.swapMode){
-    // 交換：occupied ↔ leader
-    const occPos = state.pos.get(occupied); // 必為 {cell, idx}
-    const srcPos = src; // 可能是 dock 或 cell
-    // 放 leader -> idx
-    state.pos.set(leader, {type:'cell', idx});
-    // 放 occupied -> src
-    if(srcPos && srcPos.type==='cell'){
-      state.pos.set(occupied, {type:'cell', idx: srcPos.idx});
-      renderCellLeader(srcPos.idx);
+    if(occupied){
+      if(src && src.type==='cell'){
+        const srcPos = { ...src };
+        state.pos.set(leader, {type:'cell', idx});
+        state.pos.set(occupied, {type:'cell', idx:srcPos.idx});
+        renderCellLeader(idx);
+        renderCellLeader(srcPos.idx);
+      }else{
+        state.pos.set(occupied, {type:'dock'}); buildDock();
+        state.pos.set(leader, {type:'cell', idx}); renderCellLeader(idx);
+      }
     }else{
-      state.pos.set(occupied, {type:'dock'});
-      buildDock();
+      state.pos.set(leader, {type:'cell', idx}); renderCellLeader(idx);
+      if(src && src.type==='cell') renderCellLeader(src.idx);
     }
-    renderCellLeader(idx);
-  } else {
-    // 覆蓋：把原本的送回 Dock，再把 leader 放進來
-    const occPos = state.pos.get(occupied);
-    state.pos.set(occupied, {type:'dock'});
-    state.pos.set(leader, {type:'cell', idx});
-    renderCellLeader(idx);
-    if(occPos) buildDock();
+  }else{
+    if(occupied){
+      const occPos = state.pos.get(occupied);
+      state.pos.set(occupied, {type:'dock'});
+      if(occPos) buildDock();
+    }
+    state.pos.set(leader, {type:'cell', idx}); renderCellLeader(idx);
     if(src && src.type==='cell') renderCellLeader(src.idx);
   }
 }
 
-/* =====================
-   (8) Popover：顯示該 leader 的全員
-   ===================== */
+/***** (11) Popover *****/
 function openPopover(leader){
   const list = state.membersByLeader.get(leader)||[];
   $('#poTitle').textContent = `Leader：${leader}（${list.length} 人）`;
@@ -389,50 +278,42 @@ function openPopover(leader){
   $('#poBack').style.display='flex';
 }
 function closePopover(){ $('#poBack').style.display='none'; }
+$('#poClose').addEventListener('click', closePopover);
+$('#poBack').addEventListener('click', (e)=>{ if(e.target.id==='poBack') closePopover(); });
 
-/* =====================
-   (9) 自動排列：依 Leader 名稱排序 → 依 11×9 順序填滿
-   ===================== */
+/***** (12) 自動排列 *****/
 $('#btnAuto').addEventListener('click', ()=>{
-  // 全部先回 Dock
   for(const L of state.leaders){ state.pos.set(L,{type:'dock'}); }
   buildDock();
-  // 依名稱排序
   const sorted = [...state.leaders].sort((a,b)=>a.localeCompare(b));
-  // 逐格放入
   let k=0;
   for(let i=0;i<CELLS;i++){
-    const L = sorted[k++];
-    if(!L) break;
-    state.pos.set(L,{type:'cell', idx:i});
-    renderCellLeader(i);
+    const L = sorted[k++]; if(!L) break;
+    state.pos.set(L,{type:'cell', idx:i}); renderCellLeader(i);
   }
   buildDock();
 });
 
-/* =====================
-   (10) 儲存：逐格檢查有「桌名 + leader」者 → 對該 leader 全員回填 number=桌名(人數)
-   ===================== */
+/***** (13) 儲存（bulkUpdateNumber → fallback updateNumber） *****/
 $('#btnSave').addEventListener('click', saveAll);
-
 async function saveAll(){
-  if(!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes('XXXXXXXX')){
-    toast('請先設定 GAS_WEB_APP_URL'); return;
-  }
+  if(!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes('XXXXXXXX')){ toast('請先設定 GAS_WEB_APP_URL'); return; }
   const payload = [];
-  // 建立 leader → memberCount 對照
   const countMap = new Map();
   for(const [L, arr] of state.membersByLeader){ if(!L) continue; countMap.set(L, arr.length); }
 
-  // 檢查 99 格
   const cells = $$('.cell');
   for(const cell of cells){
     const idx = parseInt(cell.dataset.idx,10);
     const tn = cell.querySelector('.table-name').value.trim();
     const L = getLeaderAtCell(idx);
-    if(!tn || !L) continue; // 必須同時有桌名+leader
-    const count = countMap.get(L)||0;
-    const value = `${tn}(${count})`;
+
+    // 沒有桌名或沒有 Leader → 不回填
+    if(!tn || !L) continue;
+
+    // 只回填桌名，最多 10 字；不附加人數
+    const value = tn.slice(0,10);
+
     const members = state.membersByLeader.get(L)||[];
     for(const m of members){
       payload.push({ item:m.item, ig:m.ig, name:m.name, leader:L, number:value });
@@ -441,11 +322,8 @@ async function saveAll(){
 
   if(!payload.length){ toast('沒有可儲存的格子'); return; }
 
-  // 先嘗試 bulkUpdateNumber
   const bulkBody = JSON.stringify({ action:'bulkUpdateNumber', changes: payload, sheet:'roster', ts:Date.now() });
   let ok = await tryPost(GAS_WEB_APP_URL, bulkBody);
-
-  // fallback 逐筆
   if(!ok){
     let all = true;
     for(const ch of payload){
@@ -455,18 +333,89 @@ async function saveAll(){
     }
     ok = all;
   }
-
   toast(ok ? '已回填 number' : '回填失敗，請稍後再試');
 }
 
+/* 保持原本的 tryPost（可讀 JSON 成功回覆） */
 async function tryPost(url, body){
   try{
-    const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body, mode:'cors', cache:'no-store' });
-    if(res.type==='opaque') return true;
-    if(res.ok) return true;
-    try{ const j=await res.json(); return !!(j && (j.ok || Array.isArray(j))); }catch{ return false; }
-  }catch{ return false; }
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body,
+      mode:'cors',
+      cache:'no-store'
+    });
+    const text = await res.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch(_) {}
+    console.info('[POST]', url, res.status, res.statusText, json ?? text);
+
+    if (res.ok && json && (json.ok === true || typeof json.updated === 'number' || typeof json.requested === 'number')) return true;
+
+    toast(`伺服器回覆：${(json? JSON.stringify(json): text).slice(0,300)}`);
+    return false;
+  }catch(err){
+    console.warn('POST error', err);
+    toast('網路錯誤：' + err.message);
+    return false;
+  }
 }
+
+/***** (14) 讀取 roster（加入 cache buster + 寬鬆解析） *****/
+async function loadRoster(){
+  const url = `${ROSTER_URL}&_=${Date.now()}`;
+  const res = await fetch(url, { cache:'no-store', mode:'cors' });
+  if(!res.ok) throw new Error(`Roster fetch failed: ${res.status} ${res.statusText}`);
+  const text = await res.text();
+  const m = text.replace(/^[\uFEFF\s]+|[\s]+$/g,'').match(/setResponse\(([\s\S]*)\)\s*;?\s*$/);
+  if(!m) throw new Error('gviz parse failed');
+  const j = JSON.parse(m[1]);
+  const cols = (j.table?.cols||[]).map(c=>c?.label||'');
+  const rows = (j.table?.rows||[]);
+
+  const data = rows.map(r=>{
+    const obj = {};
+    (r.c||[]).forEach((cell, i)=>{ obj[cols[i]||`c${i}`] = (cell && (cell.v ?? cell.f)) ?? ''; });
+    return obj;
+  });
+
+  // 標準化欄位
+  const normalized = data.map(r=>{
+    const o = {}; for(const k of needKeys){ const hit = Object.keys(r).find(x => normKey(x) === normKey(k)); o[k] = (hit ? r[hit] : '') ?? ''; }
+    o.leader = (o.leader||'').toString().trim();
+    o.name   = (o.name  ||'').toString().trim();
+    o.ig     = (o.ig    ||'').toString().trim();
+    return o;
+  });
+
+  state.rows = normalized;
+  // 分組
+  const map = new Map();
+  for(const row of normalized){ const key = (row.leader||'').trim(); if(!map.has(key)) map.set(key, []); map.get(key).push(row); }
+  map.delete('');
+  state.membersByLeader = map;
+  state.leaders = Array.from(map.keys()).sort((a,b)=>a.localeCompare(b));
+
+  console.info('[ROSTER] rows:', normalized.length, 'leaders:', state.leaders.length);
+}
+
+/***** (15) 初始化 *****/
+async function init(){
+  const rng = $('#colw'); const val = $('#colwVal');
+  const syncColw = ()=>{ document.documentElement.style.setProperty('--colw', `${rng.value}px`); val.textContent = `${rng.value}px`; };
+  rng.addEventListener('input', syncColw); syncColw();
+
+  $('#btnMode').addEventListener('click', (e)=>{ state.swapMode = !state.swapMode; e.currentTarget.setAttribute('aria-pressed', String(state.swapMode)); e.currentTarget.textContent = state.swapMode ? '交換模式' : '覆蓋模式'; });
+
+  buildGrid();
+  try{
+    await loadRoster();
+    buildDock();
+  }catch(err){ console.error(err); toast('名單載入失敗，請檢查權限/分頁名'); }
+}
+
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
